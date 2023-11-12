@@ -25,11 +25,13 @@ public class MyArrayList<E> implements IList<E> {
         elements = new Object[initialCapacity];
     }
 
+    //O(1)
     @Override
     public int size() {
         return size;
     }
 
+    //O(n)
     @Override
     public boolean add(E element) {
         ensureCapacity();
@@ -37,6 +39,7 @@ public class MyArrayList<E> implements IList<E> {
         return true;
     }
 
+    //O(n)
     private void ensureCapacity() {
         if (size == MAX_ARRAY_SIZE) {
             throw new OutOfMemoryError();
@@ -50,32 +53,48 @@ public class MyArrayList<E> implements IList<E> {
         }
     }
 
+    //O(n)
     @Override
     public void clear() {
         // TODO
+        //смотрела в оригинальный ArrayList
+//        for (int i = 0; i < size; i++) {
+//            elements[i] = null;
+//        }
+//        size = 0;
+        size = 0;
+        elements = new Object[elements.length];
     }
 
+    //O(n)
     @Override
     public boolean add(int index, E element) {
-        if (index == size){
+        if (index == size) {
             return add(element);
         }
         // TODO
-        return false;
+        checkIndex(index);
+        ensureCapacity();
+        System.arraycopy(elements, index, elements, index + 1, size++ - index);
+        elements[index] = element;
+        return true;
     }
 
+    //O(1)
     @Override
     public E get(int index) {
         checkIndex(index);
         return (E) elements[index];
     }
 
+    //O(1)
     private void checkIndex(int index) {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException(index);
         }
     }
 
+    //O(n)
     @Override
     public int indexOf(Object o) {
         if (o != null) {
@@ -94,12 +113,27 @@ public class MyArrayList<E> implements IList<E> {
         return -1;
     }
 
+    //O(n)
     @Override
     public int lastIndexOf(Object o) {
         // TODO
-        return 0;
+        if (o != null) {
+            for (int i = size - 1; i >= 0; i--) {
+                if (o.equals(elements[i])) {
+                    return i;
+                }
+            }
+        } else {
+            for (int i = size - 1; i >= 0; i--) {
+                if (o == elements[i]) {
+                    return i;
+                }
+            }
+        }
+        return -1;
     }
 
+    //O(n)
     @Override
     public E remove(int index) {
         checkIndex(index);
@@ -108,24 +142,30 @@ public class MyArrayList<E> implements IList<E> {
         return victim;
     }
 
+    //O(1)
     @Override
     public E set(int index, E element) {
         // TODO
-        return null;
+        checkIndex(index);
+        E victim = (E) elements[index];
+        elements[index] = element;
+        return victim;
     }
 
     @Override
     public Iterator<E> iterator() {
         // TODO
         return new Iterator<E>() {
+            int i = 0;
+
             @Override
             public boolean hasNext() {
-                return false;
+                return i < size;
             }
 
             @Override
             public E next() {
-                return null;
+                return (E) elements[i++];
             }
         };
     }
